@@ -3,9 +3,9 @@ use pyo3::exceptions::*;
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3::wrap_pyfunction;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
-use std::collections::HashMap;
 // Exception when you try to add small numbers
 create_exception!(randomos, SmallNumberError, PyException);
 
@@ -44,6 +44,21 @@ fn read_file(py: Python, filename: String) -> PyResult<PyObject> {
     Ok(res.into())
 }
 
+///Class Rpath for path related methods
+#[pyclass]
+struct Rpath {
+    original_path: String,
+}
+
+#[pymethods]
+impl Rpath {
+    #[new]
+    fn new(original_path: String) -> Self {
+        Rpath { original_path }
+    }
+}
+
+
 /// A Python module implemented in Rust with random OS things.
 #[pymodule]
 fn randomos(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -51,6 +66,7 @@ fn randomos(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(add_numbers, m)?)?;
     m.add_function(wrap_pyfunction!(read_file, m)?)?;
     m.add("SmallNumberError", _py.get_type::<SmallNumberError>())?;
+    m.add_class::<Rpath>()?;
 
     Ok(())
 }
