@@ -5,15 +5,18 @@ use pyo3::types::PyBytes;
 use pyo3::wrap_pyfunction;
 use std::fs::File;
 use std::io::Read;
-
+use std::collections::HashMap;
 // Exception when you try to add small numbers
 create_exception!(randomos, SmallNumberError, PyException);
 
-/// Says hello to the name given. Returns a string.
+/// Says hello to the name given and welcome to the city. Returns a string.
+/// Takes a dictrionary as argument.
 #[pyfunction]
-#[text_signature = "(name)"]
-fn hello(name: String) -> PyResult<String> {
-    let answer = format!("Hello {}", name);
+#[text_signature = "(data)"]
+fn hello(data: HashMap<String, String>) -> PyResult<String> {
+    let name = data.get("name").unwrap();
+    let city = data.get("city").unwrap();
+    let answer = format!("Hello {}, welcome to {}", name, city);
     Ok(answer)
 }
 
